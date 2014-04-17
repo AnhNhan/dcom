@@ -31,6 +31,7 @@ public:
     enum size = size_in_bytes;
     enum bit_size = size_in_bytes * 8;
 
+    /// Adds an element to the set.
     void add(in string key) pure @trusted nothrow
     {
         // Set all bits at offsets indicated by the hash functions to 1.
@@ -41,7 +42,9 @@ public:
         }
     }
 
-    bool may_exist(in string key) const pure @trusted nothrow
+    /// Tests whether an element is maybe in the set. If it returns false,
+    /// we can guarantee that it is not in the set.
+    bool lookup(in string key) const pure @trusted nothrow
     {
         foreach (func; hash_functions)
         {
@@ -53,7 +56,13 @@ public:
             }
         }
 
+        // All one's. It's maybe in the set.
         return true;
+    }
+
+    void clear() pure @safe nothrow
+    {
+        buffer = buffer.init;
     }
 
     this(F)(F[] f) pure @safe nothrow
@@ -118,20 +127,26 @@ unittest {
 
     debug writeln("  Before:\t", b1.__string);
 
-    assert(!b1.may_exist("foo"));
+    assert(!b1.lookup("foo"));
     b1.add("foo");
-    assert(b1.may_exist("foo"));
+    assert(b1.lookup("foo"));
     debug writeln("  'foo':\t", b1.__string);
 
-    assert(!b1.may_exist("bar"));
+    assert(!b1.lookup("bar"));
     b1.add("bar");
-    assert(b1.may_exist("bar"));
+    assert(b1.lookup("bar"));
     debug writeln("  'bar':\t", b1.__string);
 
-    assert(!b1.may_exist("baz"));
+    assert(!b1.lookup("baz"));
     b1.add("baz");
-    assert(b1.may_exist("baz"));
+    assert(b1.lookup("baz"));
     debug writeln("  'baz':\t", b1.__string);
+
+    b1.clear;
+    assert(!b1.lookup("foo"));
+    assert(!b1.lookup("bar"));
+    assert(!b1.lookup("baz"));
+    debug writeln("  clear:\t", b1.__string);
 
     debug write("\n\n");
 
@@ -142,9 +157,9 @@ unittest {
     import dcom.test.performance;
 
     writeln("  Measuring performance for bloom filter.");
-    check_perf("hello", &b1.add, "adding word");
-    check_perf("hello", &b1.may_exist, "testing word - existing");
-    check_perf("123", &b1.may_exist, "testing word - not exists");
+    check_perf({ b1.add("hello"); }, "adding word");
+    check_perf({ b1.lookup("hello"); }, "testing word - existing");
+    check_perf({ b1.lookup("123"); }, "testing word - not exists");
 
     writeln("Done.\n");
 }
