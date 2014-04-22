@@ -80,8 +80,9 @@ auto tokenize(in string input, in TokenMap token_map)
         if (!name.empty)
             return Token(name, value);
 
+        // TODO: This stuff is still specific for the grammar parser
         if (value.count("'") == 2)
-            return Token("String", value[1..$-1]);
+            return Token("String", value);
 
         return Token("SymbolName", value);
     }

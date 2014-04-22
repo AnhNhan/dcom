@@ -65,7 +65,7 @@ unittest {
         SpecialStmt
             At_Sign         @
             SymbolName      import
-            String          hello.algr
+            String          'hello.algr'
     Start
         Expression
             Definition
@@ -101,7 +101,7 @@ unittest {
                         Colon           :
                         DefinitionBody
                             SingleDefinition
-                                String          +
+                                String          '+'
                 Start
                     Expression
                         Definition
@@ -111,15 +111,15 @@ unittest {
                                 MultipleDefinition
                                     Minus           -
                                     SingleDefinition
-                                        String          a
+                                        String          'a'
                                     MultipleDefinition
                                         Minus           -
                                         SingleDefinition
-                                            String          b
+                                            String          'b'
                                         MultipleDefinition
                                             Minus           -
                                             SingleDefinition
-                                                String          c
+                                                String          'c'
 ");
 
     import dcom.test.performance;
@@ -218,7 +218,7 @@ SyntaxTree[] create_syntax_tree(ParseTree parse_tree)
             return children[0].create_syntax_tree;
 
         case "SpecialStmt":
-            return [SyntaxTree(token.init, rule_name, [], ["type": children[1].value.value, "value": children[2].value.value])];
+            return [SyntaxTree(token.init, rule_name, [], ["type": children[1].value.value, "value": children[2].value.value[1..$-1]])];
 
         case "Definition":
             return [SyntaxTree(token.init, rule_name, children[2].create_syntax_tree, ["def_name": token.value])];
@@ -248,7 +248,10 @@ string render_syntax_tree(SyntaxTree tree, uint level = 0)
     appender ~= indent(level);
     appender ~= tree.name.leftJustify(15) ~ " ";
     if (tree.token != Token.init)
-        appender ~= tree.token.value;
+        if (tree.token.name == "String")
+            appender ~= tree.token.value[1..$-1];
+        else
+            appender ~= tree.token.value;
     appender  = appender.stripRight;
     appender ~= "\n";
 
