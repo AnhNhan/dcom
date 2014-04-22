@@ -3,8 +3,12 @@ import dcom.parser.ll;
 
 import std.stdio;
 
-unittest {
-    immutable token_map = [
+immutable TokenMap token_map;
+immutable RuleMap  rule_map;
+
+static this()
+{
+    token_map = [
         ":": "Colon"
       , "+": "Plus"
       , "-": "Minus"
@@ -13,7 +17,7 @@ unittest {
       , "@": "At_Sign"
     ];
 
-    immutable rule_map = [
+    rule_map = [
         "Start"             : ["Expression Start", "Expression"]
       , "Expression"        : ["SpecialStmt", "Definition"]
       , "SpecialStmt"       : ["At_Sign SymbolName String"]
@@ -22,24 +26,26 @@ unittest {
       , "MultipleDefinition": ["Minus SingleDefinition MultipleDefinition", "Minus SingleDefinition"]
       , "SingleDefinition"  : ["SymbolName Plus SingleDefinition", "SymbolName", "String"]
     ];
+}
 
-    writeln("dcom.parser.ll.parse_grammar.");
+static gr1 = "
+    @import 'hello.algr'
 
-    auto gr1 = "
-        @import 'hello.algr'
+    S: Expression
 
-        S: Expression
+    Expression:
+        - Symbol
+        - Expression + Operator + Expression
 
-        Expression:
-            - Symbol
-            - Expression + Operator + Expression
-
-        Operator: '+'
-        Symbol:
-            - 'a'
-            - 'b'
-            - 'c'
+    Operator: '+'
+    Symbol:
+        - 'a'
+        - 'b'
+        - 'c'
 ";
+
+unittest {
+    writeln("dcom.parser.ll.parse_grammar.");
 
     auto tokens = gr1.tokenize(token_map);
     auto parse_tree = gr1.parse_into_parse_tree(token_map, rule_map, "Start");
@@ -117,16 +123,11 @@ unittest {
                                                 String          c
 ");
 
-    // TODO: Syntax tree test once we have that going.
-
     import dcom.test.performance;
     alias check_perf!1000 check_perf_1k;
     writeln("  Performance check (1k iterations):");
     check_perf_1k({ gr1.tokenize(token_map); }, "tokenize");
     check_perf_1k({ rule_map.match("Start", tokens); }, "match");
-    //check_perf_1k({ gr1.create_parse_tree; }, "create_parse_tree");
-    //check_perf_1k({ parse_tree.create_syntax_tree; }, "create_syntax_tree");
-    //check_perf_1k({ gr1.parse_grammar; }, "parse_grammar");
 
     writeln("Done.\n");
 }
