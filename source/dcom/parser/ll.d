@@ -53,24 +53,37 @@ auto parse_into_parse_tree(in string input, in TokenMap token_map, in RuleMap ru
 
 auto tokenize(in string input, in TokenMap token_map)
 {
-    auto wild_tokens_1 = input.split;
-    typeof(wild_tokens_1) wild_tokens_2;
-    foreach (w; wild_tokens_1)
+    string[] wild_tokens;
+    size_t cur_string_start;
+
+    foreach (ii, immutable c; input)
     {
-        // TODO: Generice these
-        if (w.canFind(":"))
+        import std.ascii : isWhite;
+        if (isWhite(c))
         {
-            wild_tokens_2 ~= w[0..$-1];
-            wild_tokens_2 ~= ":";
+            if (cur_string_start != 0)
+            {
+                wild_tokens ~= input[cur_string_start..ii];
+            }
+            cur_string_start = 0;
+            continue;
         }
-        else if (w[0] == '@')
+
+        if (!token_map.get([c], "").empty)
         {
-            wild_tokens_2 ~= "@";
-            wild_tokens_2 ~= w[1..$];
+            if (cur_string_start != 0)
+            {
+                wild_tokens ~= input[cur_string_start..ii];
+            }
+
+            wild_tokens ~= [input[ii]];
+            cur_string_start = 0;
+            continue;
         }
-        else
+
+        if (cur_string_start == 0)
         {
-            wild_tokens_2 ~= w;
+            cur_string_start = ii;
         }
     }
 
@@ -87,7 +100,7 @@ auto tokenize(in string input, in TokenMap token_map)
         return Token("SymbolName", value);
     }
 
-    return wild_tokens_2.map!map_tokens;
+    return wild_tokens.map!map_tokens;
 }
 
 Nullable!ParseTree match(TokenRange)(in RuleMap rule_map, string rule_name, TokenRange tokens, size_t level = 0)

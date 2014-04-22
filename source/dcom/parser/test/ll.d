@@ -19,6 +19,7 @@ static this()
       , "{": "Curly_Open"
       , "}": "Curly_Close"
       , "@": "At_Sign"
+      , "'": "Quote_Single"
     ];
 
     rule_map = [
@@ -29,6 +30,7 @@ static this()
       , "DefinitionBody"    : ["SingleDefinition", "MultipleDefinition"]
       , "MultipleDefinition": ["Minus SingleDefinition MultipleDefinition", "Minus SingleDefinition"]
       , "SingleDefinition"  : ["SymbolName Plus SingleDefinition", "SymbolName", "String"]
+      , "String"            : ["Quote_Single SymbolName Quote_Single"]
     ];
 }
 
