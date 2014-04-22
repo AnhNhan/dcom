@@ -34,10 +34,10 @@ struct SyntaxTree
     @property bool isLeaf() const { return children.empty; }
 }
 
-auto parse_into_parse_tree(in string input, in TokenMap token_map, in RuleMap rule_map)
+auto parse_into_parse_tree(in string input, in TokenMap token_map, in RuleMap rule_map, in string start_rule)
 {
     auto token_stream = input.tokenize(token_map);
-    auto parse_tree   = rule_map.match("S", token_stream);
+    auto parse_tree   = rule_map.match(start_rule, token_stream);
 
     if (parse_tree.isNull)
         throw new Exception("Couldn't parse!");

@@ -42,7 +42,7 @@ unittest {
 ";
 
     auto tokens = gr1.tokenize(token_map);
-    auto parse_tree = gr1.parse_into_parse_tree(token_map, rule_map);
+    auto parse_tree = gr1.parse_into_parse_tree(token_map, rule_map, "Start");
     //auto parsed_grammar = gr1.parse_grammar;
 
     debug
