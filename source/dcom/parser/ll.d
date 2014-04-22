@@ -6,6 +6,12 @@ import std.array;
 import std.range;
 import std.typecons;
 
+auto create_ll_parser(in TokenMap _token_map, in RuleMap _rule_map, in string _start_rule, SyntaxTree[] function(ParseTree) _create_syntax_tree)
+{
+    auto parser_func = (in string input) => _create_syntax_tree(input.parse_into_parse_tree(_token_map, _rule_map, _start_rule));
+    return Tuple!(typeof(parser_func), "parse")(parser_func);
+}
+
 alias Token = Tuple!(string, "name", string, "value");
 
 alias string[string]   TokenMap;
