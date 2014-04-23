@@ -30,7 +30,8 @@ static this()
       , "DefinitionBody"    : ["SingleDefinition", "MultipleDefinition"]
       , "MultipleDefinition": ["Minus SingleDefinition MultipleDefinition", "Minus SingleDefinition"]
       , "SingleDefinition"  : ["SymbolName Plus SingleDefinition", "SymbolName", "String"]
-      , "String"            : ["Quote_Single SymbolName Quote_Single"]
+      , "String"            : ["Quote_Single StringContents Quote_Single"]
+      , "StringContents"    : ["SymbolName", "Colon", "Plus", "Minus", "Curly_Open", "Curly_Close", "At_Sign"]
     ];
 }
 
