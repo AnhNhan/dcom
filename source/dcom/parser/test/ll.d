@@ -213,7 +213,10 @@ Token[] fetch_tokens(in ParseTree[] children)
     Token[] tokens;
     if (children.length)
     {
-        tokens ~= children[0].value;
+        if (children[0].name == "SymbolName")
+            tokens ~= children[0].value;
+        else
+            tokens ~= children[0].children[1..$-1].map!(x => Token("String", x.value.value)).array;
     }
     if (children.length == 3)
     {
@@ -241,7 +244,7 @@ SyntaxTree[] create_syntax_tree(ParseTree parse_tree)
             return children[0].create_syntax_tree;
 
         case "SpecialStmt":
-            return [SyntaxTree(token.init, rule_name, [], ["type": children[1].value.value, "value": children[2].value.value[1..$-1]])];
+            return [SyntaxTree(token.init, rule_name, [], ["type": children[1].value.value, "value": children[2].children[1..$-1].map!(x => cast(string) x.value.value).array.join])];
 
         case "Definition":
             return [SyntaxTree(token.init, rule_name, children[2].create_syntax_tree, ["def_name": token.value])];
@@ -272,7 +275,7 @@ string render_syntax_tree(SyntaxTree tree, uint level = 0)
     appender ~= tree.name.leftJustify(15) ~ " ";
     if (tree.token != Token.init)
         if (tree.token.name == "String")
-            appender ~= tree.token.value[1..$-1];
+            appender ~= tree.token.value;
         else
             appender ~= tree.token.value;
     appender  = appender.stripRight;
