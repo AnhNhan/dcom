@@ -68,7 +68,11 @@ unittest {
         SpecialStmt
             At_Sign         @
             SymbolName      import
-            String          'hello.algr'
+            String
+                Quote_Single    '
+                StringContents
+                    SymbolName      hello.algr
+                Quote_Single    '
     Start
         Expression
             Definition
@@ -104,7 +108,11 @@ unittest {
                         Colon           :
                         DefinitionBody
                             SingleDefinition
-                                String          '+'
+                                String
+                                    Quote_Single    '
+                                    StringContents
+                                        Plus            +
+                                    Quote_Single    '
                 Start
                     Expression
                         Definition
@@ -114,15 +122,27 @@ unittest {
                                 MultipleDefinition
                                     Minus           -
                                     SingleDefinition
-                                        String          'a'
+                                        String
+                                            Quote_Single    '
+                                            StringContents
+                                                SymbolName      a
+                                            Quote_Single    '
                                     MultipleDefinition
                                         Minus           -
                                         SingleDefinition
-                                            String          'b'
+                                            String
+                                                Quote_Single    '
+                                                StringContents
+                                                    SymbolName      b
+                                                Quote_Single    '
                                         MultipleDefinition
                                             Minus           -
                                             SingleDefinition
-                                                String          'c'
+                                                String
+                                                    Quote_Single    '
+                                                    StringContents
+                                                        SymbolName      c
+                                                    Quote_Single    '
 ");
 
     import dcom.test.performance;
