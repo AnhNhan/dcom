@@ -106,7 +106,7 @@ auto tokenize(in string input, in TokenMap token_map)
 Nullable!ParseTree match(TokenRange)(in RuleMap rule_map, string rule_name, TokenRange tokens, size_t level = 0)
     if (isInputRange!TokenRange && is(ElementType!TokenRange == Token))
 {
-    dbg(level, "Rule: ", rule_name);
+    debug(ll_debug_output) dbg(level, "Rule: ", rule_name);
     alias Return = typeof(return);
 
     if (tokens.empty)
@@ -115,11 +115,11 @@ Nullable!ParseTree match(TokenRange)(in RuleMap rule_map, string rule_name, Toke
     auto token_0 = tokens.front;
 
     import std.string;
-    dbg(level, (" Token name: " ~ token_0.name ~ ";").leftJustify(40) ~ "Token value: \"", token_0.value, "\"");
+    debug(ll_debug_output) dbg(level, (" Token name: " ~ token_0.name ~ ";").leftJustify(40) ~ "Token value: \"", token_0.value, "\"");
 
     if (token_0.name == rule_name)
     {
-        dbg(level, " Matched token: ", rule_name);
+        debug(ll_debug_output) dbg(level, " Matched token: ", rule_name);
         return cast(Return) ParseTree(token_0, rule_name, []);
     }
 
@@ -127,13 +127,13 @@ Nullable!ParseTree match(TokenRange)(in RuleMap rule_map, string rule_name, Toke
     {
         auto remaining_tokens = tokens;
         ParseTree[] matched_rules;
-        dbg(level, " Expansion: ", expansion);
+        debug(ll_debug_output) dbg(level, " Expansion: ", expansion);
 
         bool loop_terminated_early;
 
         foreach (subrule; expansion.split)
         {
-            dbg(level, "  Subrule: ", subrule);
+            debug(ll_debug_output) dbg(level, "  Subrule: ", subrule);
 
             auto matched = rule_map.match(subrule, remaining_tokens, level + 1);
             if (matched.isNull)
