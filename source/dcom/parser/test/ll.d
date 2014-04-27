@@ -149,6 +149,7 @@ unittest {
     alias check_perf!1000 check_perf_1k;
     writeln("  Performance check (1k iterations):");
     check_perf_1k({ gr1.tokenize(token_map); }, "tokenize");
+    check_perf_1k({ gr1.tokenize(token_map).map!"a.value".array; }, "tokenize.map!\"a.value\".array");
     check_perf_1k({ rule_map.match("Start", tokens); }, "match");
 
     writeln("Done.\n");
