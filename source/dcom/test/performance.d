@@ -31,7 +31,9 @@ void check_perf(uint iterations = default_perf_iterations, bool print_val = fals
 
 void check_perf(uint iterations = default_perf_iterations)(void delegate() f, string name)
 {
+    import std.conv : to;
     import std.datetime : StopWatch;
+    import std.string : rightJustify;
 
     StopWatch w;
 
@@ -41,5 +43,5 @@ void check_perf(uint iterations = default_perf_iterations)(void delegate() f, st
         f();
     }
     w.stop();
-    writeln("    ", name, " took ", w.peek.msecs, "ms");
+    writeln("    ", name, " took ", w.peek.msecs.to!string.rightJustify(5), "ms, that's ", ((w.peek.nsecs / cast(double) iterations / 1_000).to!int / 1000.0).to!string.rightJustify(6), "ms per iteration");
 }
